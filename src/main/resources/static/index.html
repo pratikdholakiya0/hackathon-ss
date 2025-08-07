@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Chat room</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Using either CDN or webjars, not both (removed duplicate imports) -->
+    <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1.5.0/dist/sockjs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+    <style>
+        *{
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        .container {
+            width: 100vw;
+            height: 100vh;
+            background-color: #fbfbfb;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .input-container{
+            width: fit-content;
+            display: flex;
+            border: 1px solid gray;
+            border-radius: 5px;
+            overflow: hidden;
+
+            input{
+                padding: 10px 20px 10px 20px;
+                border: none;
+            }
+
+            input:focus{
+                outline: none;
+            }
+
+            button{
+                padding: 10px 20px 10px 20px;
+                border: none;
+                background-color: #5376ec;
+                color: white;
+            }
+
+            button:hover{
+                cursor: pointer;
+                background-color: #3d63e4;
+            }
+        }
+        .hidden{
+            display: none;
+        }
+
+        .input-container1{
+            width: 100%;
+            display: flex;
+            border: 1px solid gray;
+            border-radius: 5px;
+            overflow: hidden;
+            padding: 10px;
+            letter-spacing: 3px;
+
+            input{
+                padding: 10px 20px 10px 20px;
+                border: none;
+            }
+
+            input:focus{
+                outline: none;
+            }
+
+            button{
+                padding: 10px 20px 10px 20px;
+                border: none;
+                background-color: #5376ec;
+                color: white;
+            }
+
+            button:hover{
+                cursor: pointer;
+                background-color: #3d63e4;
+            }
+        }
+
+        .chat-log{
+            width: 100vw;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 50px;
+        }
+
+        .chat{
+            width: 100vw;
+            max-width: 600px;
+
+            border: 1px solid gray;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container" id="login-container">
+        <div class="input-container">
+
+            <input type="text"
+                   id="name"
+                   placeholder="Enter your name"/>
+
+            <button id="login-btn">login</button>
+        </div>
+    </div>
+    <div class="hidden" id="chat-container">
+        <div class="chat-log">
+            <div class="input-container chat-box">
+                <input type="text"
+                       id="chat-message"
+                       placeholder="Enter your name"/>
+
+                <button id="send-btn">Send</button>
+            </div>
+            <div class="chat" id="chat">
+
+            </div>
+        </div>
+    </div>
+
+<script>
+    let stompClient = null;
+
+    function sendMessage() {
+        const jsonOb = {
+            name : localStorage.getItem('name') + " : ",
+            content : document.getElementById('chat-message').value,
+        }
+
+        console.log(JSON.stringify(jsonOb), localStorage.getItem('name'))
+        stompClient.send("/topic/return-to",  {},JSON.stringify(jsonOb));
+    }
+
+    document.getElementById('send-btn').addEventListener('click',() => {
+        sendMessage();
+    });
+
+    function showChat(message) {
+        const chat = document.createElement('div')
+        chat.classList.add('input-container1')
+        chat.innerHTML = `
+                <span>${message.name}</span>
+                <span>${message.content}</span>
+        `;
+        document.getElementById('chat').append(chat);
+    }
+
+    const connect = () =>{
+        let socket = new SockJS('http://localhost:8080/ws');
+        stompClient = Stomp.over(socket);
+
+        stompClient.connect({}, function(frame) {
+            console.log('Connected: ' + frame);
+
+            document.getElementById('login-container').classList.add("hidden");
+            document.getElementById('chat-container').classList.remove("hidden");
+
+            stompClient.subscribe('/topic/return-to', function(response) {
+                showChat(JSON.parse(response.body));
+            })
+        })
+
+    }
+
+    document.getElementById('login-btn').addEventListener('click', function(){
+        const name = document.getElementById('name').value;
+        localStorage.setItem('name', name);
+
+        connect();
+    });
+
+</script>
+
+</body>
+</html>
