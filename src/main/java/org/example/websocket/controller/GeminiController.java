@@ -35,7 +35,7 @@ public class GeminiController {
     }
 
     @PostMapping("/starterQuestion")
-    public String generateStarterQuestion(@RequestBody UserInsights userInsights) {
+    public String[] generateStarterQuestion(@RequestBody UserInsights userInsights) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
         User user = userService.getUser(username);
@@ -53,7 +53,7 @@ public class GeminiController {
 
         user.setRecordsOfQNA(qna);
         userService.saveUser(user);
-        return questions;
+        return q;
     }
 
     @GetMapping("/verifyAnswer")

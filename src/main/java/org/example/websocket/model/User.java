@@ -16,7 +16,7 @@ public class User {
     private String username;
     private String password;
     private String email;
-    private int phoneNumber;
+    private long phoneNumber;
     public RecordsOfQNA recordsOfQNA;
     UserInsights userInsights;
     public String feedback;
