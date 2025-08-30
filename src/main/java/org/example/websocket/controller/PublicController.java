@@ -64,5 +64,4 @@ public class PublicController {
         String username = authentication.getName();
         return ResponseEntity.ok(userService.getUser(username));
     }
-
 }
