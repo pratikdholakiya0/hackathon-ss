@@ -6,4 +6,4 @@ FROM openjdk:21-slim
 COPY --from=build /target/websocket-0.0.1-SNAPSHOT.jar prod.jar
 
 EXPOSE 8080
-ENTRYPOINT["java", "-jar", "prod.jar"]
+ENTRYPOINT ["java", "-jar", "prod.jar"]
