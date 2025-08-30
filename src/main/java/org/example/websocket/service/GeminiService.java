@@ -1,7 +1,12 @@
 package org.example.websocket.service;
 
+import org.example.websocket.controller.GeminiController;
+import org.example.websocket.model.User;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -13,6 +18,9 @@ public class GeminiService {
 
     @Value("${gemini.api.key}")
     private String apiKey;
+
+    @Autowired
+    private UserService userService;
 
     private static final String GEMINI_API_URL =
             "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent";

@@ -35,7 +35,7 @@ public class GeminiController {
     }
 
     @PostMapping("/starterQuestion")
-    public String generateStarterQuestion(@RequestBody UserInsights userInsights) {
+    public String[] generateStarterQuestion(@RequestBody UserInsights userInsights) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
         User user = userService.getUser(username);
@@ -53,20 +53,16 @@ public class GeminiController {
 
         user.setRecordsOfQNA(qna);
         userService.saveUser(user);
-        return questions;
+        return q;
     }
 
     @GetMapping("/verifyAnswer")
-    public String verifyAnswer() {
+    public void verifyAnswer() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
+
         User user = userService.getUser(username);
         RecordsOfQNA question = user.getRecordsOfQNA();
 
-        String resp =  "verify answer of every question with given answer and give feed back answers " + question.getAnswer().toString() + " questions " + question.getQuestion().toString();
-        question.setFeedback(resp);
-
-        qnaRepository.save(question);
-        return resp;
     }
 }
